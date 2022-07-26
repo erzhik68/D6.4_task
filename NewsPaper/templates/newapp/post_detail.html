@@ -1,0 +1,42 @@
+{% extends 'default.html' %}
+
+{% load custom_filters %}
+
+{% block title %} Post {% endblock title %}
+
+{% block content %}
+<table>
+    <thead>
+        <th>
+            <h5>Заголовок</h5>
+        </th>
+        <th>
+            <h5>Дата публикации</h5>
+        </th>
+        <th>
+            <h5>Текст статьи</h5>
+        </th>
+    </thead>
+    <tr>
+        <td>
+            {{ post.post_title|censor:'*' }}
+        </td>
+        <td>
+            {{ post.post_date_time|date:'d M Y H:i' }}
+        </td>
+        <td>
+            {{ post.post_text|censor:'*' }}
+        </td>
+    </tr>
+</table>
+
+
+<label><b>Категория: </b></label>
+{% for cat in post.post_category.all %}
+    <b>{{ cat.category_name }}</b><br>
+        {% if is_not_subscribed %}
+            <button><a href="subscribe/"> Подписаться! </a> </button>
+        {% endif %}
+{% endfor %}
+
+{% endblock content %}

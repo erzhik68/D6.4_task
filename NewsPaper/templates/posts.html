@@ -1,0 +1,86 @@
+<!--  наследуемся от шаблона default.html -->
+{% extends 'default.html' %}
+<!-- загружаем собственный фильтр -->
+{% load custom_filters %}
+
+<!-- Название у нас будет posts -->
+{% block title %}
+Posts
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все посты -->
+{% block content %}
+    <h1>Все новости</h1>
+    <!-- Выводим количество новостей -->
+    <h3>Количество новостей на странице: {{ posts|length }}</h3>
+    <hr>
+    <!-- Если есть новости, то выводим таблицу с ними -->
+    {% if posts %}
+        <table>
+            <tr>
+                <td>
+                    <h5>Заголовок</h5>
+                </td>
+                <td>
+                    <h5>Дата публикации</h5>
+                </td>
+                <td>
+                    <h5>Текст статьи</h5>
+                </td>
+            </tr>
+        <!-- c for убрал filter.qs, чтоб заработала пагинация -->
+        {% for post in posts %}
+            <tr>
+                <td>
+                    <a href="{% url 'post_detail' post.id %}">{{ post.post_title|censor:'*' }}</a> <!-- Ссылка на страницу с информацией о посте -->
+                    <a href="{% url 'post_update' post.id %}"><u>Редактировать</u></a> <!-- Ссылка на редактирование поста -->
+                    <a href="{% url 'post_delete' post.id %}"><u> Удалить </u></a> <!-- Ссылка на удаление поста -->
+                </td>
+                <td>
+                    {{ post.post_date_time|date:'d M Y H:i' }}
+                </td>
+                <td>
+                    <!-- Специальный фильтр, чтобы ограничить количество символов до 50, остальные превратятся в многоточие. -->
+                    {{ post.post_text|censor:'*'|truncatechars:50 }}
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}  <!-- Если новостей нет, то говорим что новостей нет ;) -->
+        <h2>Новостей нет!</h2>
+    {% endif %}
+
+    <a href="{% url 'post_create' %}">Добавить новость/статью</a>
+    <br>
+
+    {% if is_paginated %}
+
+        {% if page_obj.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a>{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">>>></a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+
+    {% endif %}
+
+    <br>
+    <hr>
+
+    <button> <a href="accounts/logout/">Выйти</a> </button>
+
+    {% if is_not_authors %}
+    <button> <a href="/upgrade/"> Хочу стать автором!</a> </button>
+    {% endif %}
+{% endblock content %}

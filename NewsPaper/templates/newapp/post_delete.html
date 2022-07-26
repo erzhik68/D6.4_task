@@ -1,0 +1,37 @@
+{% extends 'default.html' %}
+
+{% load custom_filters %}
+
+{% block title %} Post {% endblock title %}
+
+{% block content %}
+<h2>Вы действительно хотите удалить данную новость/статью?</h2>
+<table>
+    <thead>
+        <th>
+            Заголовок
+        </th>
+        <th>
+            Дата публикации
+        </th>
+        <th>
+            Текст статьи
+        </th>
+    </thead>
+    <tr>
+        <td>
+            {{ post.post_title|censor:'*' }}
+        </td>
+        <td>
+            {{ post.post_date_time|date:'d M Y H:i' }}
+        </td>
+        <td>
+            {{ post.post_text|censor:'*'|truncatechars:50 }}
+        </td>
+    </tr>
+</table>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="подтвердить"></form>
+{% endblock content %}
