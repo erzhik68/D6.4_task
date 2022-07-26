@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.auth.models import User
 from django.core.mail import send_mail, \
     EmailMultiAlternatives  # импортируем классы для создания объекта письма в тесктовом и html форматах
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, m2m_changed
 from django.shortcuts import render, redirect
 from django.template.defaultfilters import truncatechars
 from django.template.loader import render_to_string  # импортируем функцию, которая срендерит наш html в текст
@@ -108,6 +108,7 @@ def notify_users_post(sender, instance, created, **kwargs):
             msg.attach_alternative(html_content, "text/html")  # добавляем html
             msg.send()  # отсылаем
 
+
 # коннектим наш сигнал к функции обработчику и указываем, к какой именно модели после сохранения привязать функцию
 post_save.connect(notify_users_post, sender=Post)
 
@@ -121,6 +122,7 @@ class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # context['form'] = PostForm
         return context
 
     def form_valid(self, PostForm):
@@ -141,8 +143,9 @@ class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     #         post_text=request.POST['post_text'],
     #         post_rating=0,
     #     )
-    #     post.save()
+    #     post.save(commit=False)
     #     post.post_category.add(int(request.POST['post_category']))
+    #     post.save()
     #     return redirect('/')  # возврат на главную страницу новостей
 
 

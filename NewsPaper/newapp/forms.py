@@ -11,6 +11,10 @@ from django.contrib.auth.decorators import login_required
 
 # Создаём модельную форму
 class PostForm(ModelForm):
+    
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.fields['post_author'] = self.instance.user.username
 
     # в класс мета, пишем модель, по которой будет строиться форма и перечисляем нужные нам поля.
     class Meta:

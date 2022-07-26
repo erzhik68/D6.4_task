@@ -57,6 +57,10 @@ class Post(models.Model):
     def preview(self):
         return self.post_text[0:123] + '...'
 
+    def save_m2m(self):
+        pass
+
+
 class PostCategory(models.Model):
     post_through = models.ForeignKey(Post, on_delete=models.CASCADE)
     category_through = models.ForeignKey(Category, on_delete=models.CASCADE)
