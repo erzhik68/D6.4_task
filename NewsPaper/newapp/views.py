@@ -121,24 +121,29 @@ class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['form'] = PostForm
         return context
 
-    def post(self, request, *args, **kwargs):
-        new_author, created = Author.objects.get_or_create(
-            author_user=self.request.user
-        )
-        post = Post(
-            post_type=request.POST['post_type'],
-            post_author=new_author,
-            post_date_time=datetime.now(),
-            post_title=request.POST['post_title'],
-            post_text=request.POST['post_text'],
-            post_rating=0,
-        )
-        post.save()
-        post.post_category.add(int(request.POST['post_category']))
-        return redirect('/')  # возврат на главную страницу новостей
+    def form_valid(self, PostForm):
+        self.object = PostForm.save(commit=False)
+        self.object.post_author = Author.objects.get(author_user=self.request.user)
+        self.object = PostForm.save()
+        return super().form_valid(PostForm)
+
+    # def post(self, request, *args, **kwargs):
+    #     new_author, created = Author.objects.get_or_create(
+    #         author_user=self.request.user
+    #     )
+    #     post = Post(
+    #         post_type=request.POST['post_type'],
+    #         post_author=new_author,
+    #         post_date_time=datetime.now(),
+    #         post_title=request.POST['post_title'],
+    #         post_text=request.POST['post_text'],
+    #         post_rating=0,
+    #     )
+    #     post.save()
+    #     post.post_category.add(int(request.POST['post_category']))
+    #     return redirect('/')  # возврат на главную страницу новостей
 
 
 # дженерик для редактирования поста
